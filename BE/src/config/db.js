@@ -1,17 +1,18 @@
-import mongoose from 'mongoose';
-const MONGODB_URI = process.env.MONGODB_URI;
 
-const connectDB = async () => {
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(MONGODB_URI, {
+    await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log('Kết nối MongoDB thành công');
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error('Lôĩ khi kết nối MongoDB:', error);
     process.exit(1);
   }
 };
-
-export default connectDB;

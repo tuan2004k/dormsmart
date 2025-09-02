@@ -8,9 +8,19 @@ const authController = {
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      const { email, name, role, phone, password } = req.body;
-      const user = await register(email, name, role, phone, password);
-      res.status(201).json({ message: 'User registered', user: { email, name, role } });
+      const {
+        email,
+        name,
+        role,
+        phone,
+        password } = req.body;
+      const user = await register(
+        email,
+        name,
+        role,
+        phone,
+        password);
+      res.status(201).json({ message: 'Người dùng đã đăng ký', user: { email, name, role } });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -22,9 +32,11 @@ const authController = {
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      const { email, password } = req.body;
+      const {
+        email,
+        password } = req.body;
       const { token } = await login(email, password);
-      res.json({ message: 'Login successful', token });
+      res.json({ message: 'Đăng nhập thành công', token });
     } catch (error) {
       res.status(401).json({ message: error.message });
     }
