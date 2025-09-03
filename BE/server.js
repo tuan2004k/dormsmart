@@ -1,6 +1,9 @@
 import express from 'express';
 import { connectDB } from './src/config/db.js';
 import authRoutes from './src/routes/auth.Routes.js';
+import studenRoutes from './src/routes/student.Routes.js'
+import roomRoutes from './src/routes/room.Routes.js'
+import buildingRoutes from './src/routes/building.Routes.js'
 import cors from 'cors';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -28,13 +31,30 @@ const swaggerOptions = {
                 description: 'Development server',
             },
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
     },
-    apis: ['./src/routes/auth.Routes.js'], 
+    apis: ['./src/routes/auth.Routes.js', './src/routes/student.Routes.js', './src/routes/room.Routes.js', './src/routes/building.Routes.js']
+
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use('/api/auth', authRoutes);
+app.use('/api', studenRoutes);
+app.use('/api', roomRoutes);
+app.use('/api', buildingRoutes);
+
+app.get('/', (req, res) => {
+  res.redirect('/api-docs');
+});
 
 app.listen(5000, () => console.log('Server on '));
