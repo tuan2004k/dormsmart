@@ -9,10 +9,29 @@ import {
 const buildingController = {
     async create(req, res) {
         try {
-            const { name, address } = req.body;
+            const { 
+                name, 
+                code, 
+                address, 
+                description, 
+                facilities, 
+                totalFloors, 
+                totalRooms, 
+                managerId, 
+                status 
+            } = req.body;
+
             const building = await createBuilding(
-                name,
-                address);
+                name, 
+                code, 
+                address, 
+                description, 
+                facilities, 
+                totalFloors, 
+                totalRooms, 
+                managerId, 
+                status
+            );
             res.status(201)
                 .json({ message: 'Building created', building });
         } catch (error) {
@@ -52,8 +71,8 @@ const buildingController = {
 
     async update(req, res) {
         try {
-            const { name, address } = req.body;
-            const building = await updateBuilding(req.params.id, name, address);
+            const building = await updateBuilding(req.params.id, req.body); // Pass req.body directly
+            if (!building) return res.status(404).json({ message: 'Building not found' });
             res.json({ message: 'Building updated', building });
         } catch (error) {
             res.status(400).json({ message: error.message });

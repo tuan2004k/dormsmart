@@ -1,27 +1,50 @@
 import User from '../models/User.js';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import { generateToken, verifyToken } from '../utils/jwt.js';
+import sendEmail from './emailService.js'; 
+import dotenv from 'dotenv'; 
 
-dotenv.config();
+dotenv.config(); 
 
 export const register = async (
+  username,
   email,
-  name,
+  fullName, 
   role,
   phone,
-  password) => {
+  password,
+  avatar) => { 
   const userExists = await User.findOne({ email });
   if (userExists) {
     throw new Error('Người dùng đã tồn tại');
   }
 
   const user = await User.create({
+    username,
     email,
-    name,
+    profile: {
+      fullName,
+      phone,
+      avatar,
+    },
     role,
-    phone,
     password,
   });
+
+  // Send welcome email
+  const subject = 'Chào mừng bạn đến với Hệ thống quản lý ký túc xá!';
+  const htmlContent = `
+    <h1>Chào mừng, ${fullName}!</h1>
+    <p>Cảm ơn bạn đã đăng ký tài khoản tại hệ thống của chúng tôi.</p>
+    <p>Thông tin đăng nhập của bạn:</p>
+    <ul>
+      <li>Email: ${email}</li>
+      <li>Tên người dùng: ${username}</li>
+    </ul>
+    <p>Bạn có thể đăng nhập tại đây: <a href="http://yourfrontend.com/login">Đăng nhập</a></p>
+    <p>Trân trọng,</p>
+    <p>Đội ngũ quản lý ký túc xá</p>
+  `;
+  await sendEmail(email, subject, htmlContent);
 
   return user;
 };
@@ -49,13 +72,28 @@ export const login = async (
     role: user.role,
     id: user._id
   };
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+  return { token: generateToken(payload), user }; 
 };
 
-export const validateToken = (token) => {
+export const refreshToken = async (oldToken) => {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyToken(oldToken);
+    if (!decoded) {
+      throw new Error('Invalid or expired token');
+    }
+
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const newPayload = {
+      email: user.email,
+      role: user.role,
+      id: user._id
+    };
+    return generateToken(newPayload);
   } catch (error) {
-    return null;
+    throw new Error(`Error refreshing token: ${error.message}`);
   }
 };

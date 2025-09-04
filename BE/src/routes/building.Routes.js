@@ -28,14 +28,40 @@ const router = express.Router();
  *             type: object
  *             required:
  *               - name
+ *               - code
  *               - address
  *             properties:
  *               name:
  *                 type: string
  *                 example: "Building A"
+ *               code:
+ *                 type: string
+ *                 example: "BLDA"
  *               address:
  *                 type: string
  *                 example: "123 Main St"
+ *               description:
+ *                 type: string
+ *                 example: "A new dormitory building"
+ *               facilities:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["Wifi", "Laundry"]
+ *               totalFloors:
+ *                 type: number
+ *                 example: 5
+ *               totalRooms:
+ *                 type: number
+ *                 example: 100
+ *               managerId:
+ *                 type: string
+ *                 format: objectid
+ *                 example: "60d0fe4f5311236168a10996"
+ *               status:
+ *                 type: string
+ *                 enum: ['active', 'maintenance', 'closed']
+ *                 example: "active"
  *     responses:
  *       201:
  *         description: Building created successfully
@@ -59,6 +85,12 @@ router.post('/buildings', [protect, authorize(['ADMIN'])], buildingController.cr
  *     responses:
  *       200:
  *         description: A list of buildings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Building'
  *       401:
  *         description: Unauthorized
  */
@@ -82,6 +114,10 @@ router.get('/buildings', protect, buildingController.getAll);
  *     responses:
  *       200:
  *         description: Building data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Building'
  *       404:
  *         description: Building not found
  *       401:
@@ -113,8 +149,26 @@ router.get('/buildings/:id', protect, buildingController.getById);
  *             properties:
  *               name:
  *                 type: string
+ *               code:
+ *                 type: string
  *               address:
  *                 type: string
+ *               description:
+ *                 type: string
+ *               facilities:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               totalFloors:
+ *                 type: number
+ *               totalRooms:
+ *                 type: number
+ *               managerId:
+ *                 type: string
+ *                 format: objectid
+ *               status:
+ *                 type: string
+ *                 enum: ['active', 'maintenance', 'closed']
  *     responses:
  *       200:
  *         description: Building updated successfully

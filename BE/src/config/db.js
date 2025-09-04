@@ -12,7 +12,11 @@ export const connectDB = async () => {
     });
     console.log('Kết nối MongoDB thành công');
   } catch (error) {
-    console.error('Lôĩ khi kết nối MongoDB:', error);
+    console.error('Lỗi khi kết nối MongoDB:', error);
     process.exit(1);
   }
+};
+
+export const disconnectDB = async () => {
+  await mongoose.disconnect();
 };

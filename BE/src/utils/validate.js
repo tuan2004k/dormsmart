@@ -1,16 +1,19 @@
 import { body } from 'express-validator';
 
 export const validateRegister = [
+    body('username')
+        .notEmpty()
+        .withMessage('Tên người dùng không được để trống'),
     body('email')
         .isEmail()
         .withMessage('Vui lòng nhập địa chỉ email hợp lệ'),
-    body('name')
+    body('profile.fullName')
         .notEmpty()
-        .withMessage('Tên không được để trống'),
+        .withMessage('Họ và tên không được để trống'),
     body('role')
-        .isIn(['STUDENT', 'ADMIN'])
-        .withMessage('Vai trò phải là SINH VIÊN hoặc QUẢN TRỊ VIÊN'),
-    body('phone')
+        .isIn(['STUDENT', 'ADMIN', 'STAFF'])
+        .withMessage('Vai trò phải là SINH VIÊN, QUẢN TRỊ VIÊN hoặc NHÂN VIÊN'),
+    body('profile.phone')
         .isMobilePhone('any')
         .withMessage('Vui lòng nhập số điện thoại hợp lệ'),
     body('password')

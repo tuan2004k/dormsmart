@@ -4,11 +4,13 @@ import authController from '../controllers/auth.Controllers.js';
 import { validateRegister, validateLogin } from '../utils/validate.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorize } from '../middleware/authorize.js';
+import upload from '../config/multerConfig.js'; // Import multer upload middleware
 
 const router = express.Router();
 
 router.post(
   '/register',
+  upload.single('avatar'), // Add multer middleware for single file upload
   validateRegister,
   /**
    * @swagger
@@ -19,29 +21,39 @@ router.post(
    *     requestBody:
    *       required: true
    *       content:
-   *         application/json:
+   *         multipart/form-data:
    *           schema:
    *             type: object
    *             required:
+   *               - username
    *               - email
-   *               - name
+   *               - fullName
    *               - role
    *               - phone
    *               - password
    *             properties:
+   *               username:
+   *                 type: string
+   *                 example: "john.doe"
    *               email:
    *                 type: string
    *                 format: email
-   *               name:
+   *               fullName:
    *                 type: string
+   *                 example: "John Doe"
    *               role:
    *                 type: string
-   *                 enum: [STUDENT, ADMIN]
+   *                 enum: [STUDENT, ADMIN, STAFF]
    *               phone:
    *                 type: string
+   *                 example: "0901234567"
    *               password:
    *                 type: string
    *                 format: password
+   *               avatar:
+   *                 type: string
+   *                 format: binary
+   *                 description: User avatar image file
    *     responses:
    *       201:
    *         description: User registered successfully
@@ -55,11 +67,15 @@ router.post(
    *                 user:
    *                   type: object
    *                   properties:
+   *                     username:
+   *                       type: string
    *                     email:
    *                       type: string
-   *                     name:
+   *                     fullName:
    *                       type: string
    *                     role:
+   *                       type: string
+   *                     avatar:
    *                       type: string
    *       400:
    *         description: Invalid input or user already exists
@@ -109,7 +125,8 @@ router.post(
    */
   authController.login
 );
-router.get('/admin-only', [protect, authorize(['ADMIN'])], (req, res) => {
+
+router.get('/admin-only', [protect, authorize(['ADMIN', 'STAFF'])], (req, res) => {
   /**
    * @swagger
    * /api/auth/admin-only:
@@ -136,7 +153,7 @@ router.get('/admin-only', [protect, authorize(['ADMIN'])], (req, res) => {
   res.json({ message: 'Chào ADMIN! Bạn có quyền truy cập.' });
 });
 
-router.get('/student-info', [protect, authorize(['STUDENT', 'ADMIN'])], (req, res) => {
+router.get('/student-info', [protect, authorize(['STUDENT', 'ADMIN', 'STAFF'])], (req, res) => {
   /**
    * @swagger
    * /api/auth/student-info:
@@ -162,9 +179,11 @@ router.get('/student-info', [protect, authorize(['STUDENT', 'ADMIN'])], (req, re
    *                       type: string
    *                     email:
    *                       type: string
-   *                     name:
+   *                     fullName: // Changed from name
    *                       type: string
    *                     role:
+   *                       type: string
+   *                     avatar: // Added avatar
    *                       type: string
    *       401:
    *         description: Unauthorized, token missing or invalid
@@ -201,4 +220,30 @@ router.post('/logout', protect, (req, res) => {
     message: 'Đăng xuất thành công '
   });
 });
+
+router.post('/refresh', authController.refresh);
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Refresh JWT token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized, old token missing or invalid
+ */
+
 export default router;

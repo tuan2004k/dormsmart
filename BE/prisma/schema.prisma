@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model User {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String    @unique
+  password  String
+  role      String    @default("STUDENT")
+  phone     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  students  Student[]
+}
+
+model Student {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  studentId   String    @unique
+  fullName    String
+  dateOfBirth DateTime?
+  gender      String?
+  roomId      String?   @db.ObjectId
+  room        Room?     @relation(fields: [roomId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Room {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  roomNumber  String    @unique
+  buildingId  String    @db.ObjectId
+  building    Building  @relation(fields: [buildingId], references: [id])
+  capacity    Int
+  occupied    Int       @default(0)
+  status      String    @default("Available")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  students    Student[]
+}
+
+model Building {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    @unique
+  address   String
+  rooms     Room[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}

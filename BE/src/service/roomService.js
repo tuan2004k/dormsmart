@@ -1,7 +1,28 @@
 import Room from '../models/Room.js';
 
-export const createRoom = async (roomNumber, buildingId, capacity, status) => {
-  const room = new Room({ roomNumber, buildingId, capacity, status });
+export const createRoom = async (
+  roomNumber,
+  buildingId,
+  floor,
+  roomType,
+  capacity,
+  currentOccupancy,
+  monthlyRent,
+  facilities,
+  status,
+  images) => {
+  const room = new Room({
+    roomNumber,
+    buildingId,
+    floor,
+    roomType,
+    capacity,
+    currentOccupancy,
+    monthlyRent,
+    facilities,
+    status,
+    images,
+  });
   return await room.save();
 };
 
@@ -13,19 +34,38 @@ export const getAllRooms = async () => {
   return await Room.find().populate('buildingId');
 };
 
-export const updateRoom = async (id, roomNumber, buildingId, capacity, occupied, status) => {
-  const room = await Room.findById(id);
-  if (!room) {
-    throw new Error('Room not found');
+export const getAvailableRooms = async () => {
+  try {
+    const rooms = await Room.find({ status: 'available' }).populate('buildingId');
+    return rooms;
+  } catch (error) {
+    throw new Error(`Error fetching available rooms: ${error.message}`);
   }
-  room.roomNumber = roomNumber || room.roomNumber;
-  room.buildingId = buildingId || room.buildingId;
-  room.capacity = capacity || room.capacity;
-  room.occupied = occupied || room.occupied;
-  room.status = status || room.status;
-  return await room.save();
+};
+
+export const updateRoomStatus = async (id, newStatus) => {
+  try {
+    const room = await Room.findByIdAndUpdate(id, { status: newStatus }, { new: true });
+    return room;
+  } catch (error) {
+    throw new Error(`Error updating room status: ${error.message}`);
+  }
+};
+
+export const updateRoom = async (id, updateData) => {
+  try {
+    const room = await Room.findByIdAndUpdate(id, updateData, { new: true });
+    return room;
+  } catch (error) {
+    throw new Error(`Error updating room: ${error.message}`);
+  }
 };
 
 export const deleteRoom = async (id) => {
-  return await Room.findByIdAndDelete(id);
+  try {
+    await Room.findByIdAndDelete(id);
+    return { message: 'Room deleted successfully' };
+  } catch (error) {
+    throw new Error(`Error deleting room: ${error.message}`);
+  }
 };

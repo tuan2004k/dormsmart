@@ -1,33 +1,46 @@
-// models/User.js
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+    },
     email:
     {
         type: String,
         required: true,
         unique: true
     },
-    name:
-    {
-        type: String,
-        required: true
-    },
     role:
     {
         type: String,
-        enum: ['STUDENT', 'ADMIN'],
-        default: 'STUDENT'
+        enum: ['STUDENT', 'ADMIN', 'STAFF'],
+        default: 'STUDENT',
+        index: true, // Added index to role
     },
-    phone:
-    {
-        type: String
+    profile: {
+        fullName: {
+            type: String,
+            required: true,
+        },
+        phone: {
+            type: String,
+        },
+        avatar: {
+            type: String,
+        },
     },
     password:
     {
         type: String,
         required: true
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
     },
     createdAt:
     {
