@@ -1,40 +1,55 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { error, info } from '../utils/logger.js';
 
-const uploadDir = path.join(process.cwd(), 'uploads');
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure the uploads directory exists
+const uploadsDir = 'uploads';
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  info(`Created uploads directory at ${uploadsDir}`);
 }
 
+// Set up storage engine
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
+  destination: (req, file, cb) => {
+    console.log('Multer: Setting destination...');
+    cb(null, uploadsDir);
   },
-  filename: function (req, file, cb) {
-   
-    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  filename: (req, file, cb) => {
+    console.log('Multer: Setting filename...');
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   },
 });
 
-// File filter function
-const fileFilter = (req, file, cb) => {
-  const allowedFileTypes = /jpeg|jpg|png|pdf/;
-  const mimetype = allowedFileTypes.test(file.mimetype);
-  const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
+// Check file type
+const checkFileType = (file, cb) => {
+  console.log('Multer: Checking file type...');
+  // Allowed ext
+  const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx/;
+  // Check ext
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
 
   if (mimetype && extname) {
+    console.log('Multer: File type accepted.');
     return cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only JPEG, JPG, PNG, and PDF files are allowed.'), false);
+    console.log('Multer: File type rejected.');
+    cb(new Error('Error: Images/Documents Only! (jpeg, jpg, png, gif, pdf, doc, docx)'));
   }
 };
 
+// Init upload
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
-  fileFilter: fileFilter
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit
+  fileFilter: (req, file, cb) => {
+    console.log('Multer: Applying file filter...');
+    checkFileType(file, cb);
+  },
 });
 
 export default upload;

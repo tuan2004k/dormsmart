@@ -31,7 +31,7 @@ export const getRoomById = async (id) => {
 };
 
 export const getAllRooms = async () => {
-  return await Room.find().populate('buildingId');
+  return await Room.find();
 };
 
 export const getAvailableRooms = async () => {

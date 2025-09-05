@@ -38,7 +38,7 @@ export const getBuildingById = async (id) => {
 
 export const getAllBuildings = async () => {
   try {
-    return await Building.find().populate('managerId');
+    return await Building.find();
   } catch (error) {
     throw new Error(`Error fetching buildings: ${error.message}`);
   }

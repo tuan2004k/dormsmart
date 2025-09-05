@@ -1,6 +1,6 @@
 import User from '../models/User.js';
 import { generateToken, verifyToken } from '../utils/jwt.js';
-import sendEmail from './emailService.js'; 
+// import sendEmail from './emailService.js'; 
 import dotenv from 'dotenv'; 
 
 dotenv.config(); 
@@ -44,7 +44,7 @@ export const register = async (
     <p>Trân trọng,</p>
     <p>Đội ngũ quản lý ký túc xá</p>
   `;
-  await sendEmail(email, subject, htmlContent);
+  // await sendEmail(email, subject, htmlContent);
 
   return user;
 };

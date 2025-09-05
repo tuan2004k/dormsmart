@@ -1,7 +1,10 @@
 import Contract from '../models/Contract.js';
-import sendEmail from './emailService.js'; // Import sendEmail
+// import sendEmail from './emailService.js'; // Import sendEmail
 import Student from '../models/Student.js'; // Import Student model
 import User from '../models/User.js'; // Import User model
+import Room from '../models/Room.js';
+import Payment from '../models/Payment.js';
+import { info, error } from '../utils/logger.js';
 
 // Create a new contract
 export const createContract = async (contractData) => {
@@ -67,17 +70,17 @@ export const signContract = async (id, userId) => {
       const student = await Student.findById(contract.studentId); // Get student details
       if (student) {
         const user = await User.findById(student.userId); // Get user (email) details
-        if (user && user.email) {
-          const subject = 'Hợp đồng của bạn đã được ký kết!';
-          const htmlContent = `
-            <h1>Xin chúc mừng, ${user.profile.fullName}!</h1>
-            <p>Hợp đồng thuê phòng của bạn (Mã hợp đồng: ${contract.contractNumber}) đã được ký kết thành công.</p>
-            <p>Bạn có thể xem chi tiết hợp đồng tại đây: <a href="http://yourfrontend.com/contracts/${contract._id}">Xem hợp đồng</a></p>
-            <p>Trân trọng,</p>
-            <p>Đội ngũ quản lý ký túc xá</p>
-          `;
-          await sendEmail(user.email, subject, htmlContent);
-        }
+        // if (user && user.email) {
+        //   const subject = 'Hợp đồng của bạn đã được ký kết!';
+        //   const htmlContent = `
+        //     <h1>Xin chúc mừng, ${user.profile.fullName}!</h1>
+        //     <p>Hợp đồng thuê phòng của bạn (Mã hợp đồng: ${contract.contractNumber}) đã được ký kết thành công.</p>
+        //     <p>Bạn có thể xem chi tiết hợp đồng tại đây: <a href="http://yourfrontend.com/contracts/${contract._id}">Xem hợp đồng</a></p>
+        //     <p>Trân trọng,</p>
+        //     <p>Đội ngũ quản lý ký túc xá</p>
+        //   `;
+        //   await sendEmail(user.email, subject, htmlContent);
+        // }
       }
     }
 

@@ -2,6 +2,7 @@ import express from 'express';
 import * as userController from '../controllers/user.Controllers.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorize } from '../middleware/authorize.js';
+import upload from '../config/multerConfig.js'; // Import multer upload middleware
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ const router = express.Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -58,7 +59,8 @@ const router = express.Router();
  *                     example: "0123456789"
  *                   avatar:
  *                     type: string
- *                     example: "/uploads/avatar.jpg"
+ *                     format: binary
+ *                     description: User avatar image file
  *               isActive:
  *                 type: boolean
  *                 example: true
@@ -72,7 +74,7 @@ const router = express.Router();
  *       403:
  *         description: Forbidden
  */
-router.post('/users', [protect, authorize(['ADMIN'])], userController.create);
+router.post('/users', [protect, authorize(['ADMIN']), upload.single('avatar')], userController.create);
 
 /**
  * @swagger
@@ -137,7 +139,7 @@ router.get('/users/:id', [protect, authorize(['ADMIN'])], userController.getById
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -167,7 +169,8 @@ router.get('/users/:id', [protect, authorize(['ADMIN'])], userController.getById
  *                     example: "0987654321"
  *                   avatar:
  *                     type: string
- *                     example: "/uploads/new_avatar.jpg"
+ *                     format: binary
+ *                     description: User avatar image file
  *               isActive:
  *                 type: boolean
  *                 example: false
@@ -183,7 +186,7 @@ router.get('/users/:id', [protect, authorize(['ADMIN'])], userController.getById
  *       404:
  *         description: User not found
  */
-router.put('/users/:id', [protect, authorize(['ADMIN'])], userController.update);
+router.put('/users/:id', [protect, authorize(['ADMIN']), upload.single('avatar')], userController.update);
 
 /**
  * @swagger

@@ -179,11 +179,11 @@ router.get('/student-info', [protect, authorize(['STUDENT', 'ADMIN', 'STAFF'])],
    *                       type: string
    *                     email:
    *                       type: string
-   *                     fullName: // Changed from name
+   *                     fullName:
    *                       type: string
    *                     role:
    *                       type: string
-   *                     avatar: // Added avatar
+   *                     avatar:
    *                       type: string
    *       401:
    *         description: Unauthorized, token missing or invalid
