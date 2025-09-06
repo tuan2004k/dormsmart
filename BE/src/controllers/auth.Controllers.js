@@ -1,8 +1,7 @@
-import { register, login, refreshToken } from '../service/authservice.js'; // Import refreshToken
+import { register, login, refreshToken } from '../service/authservice.js';
 import { body, validationResult } from 'express-validator';
 import { validateRegister, validateLogin } from '../utils/validate.js';
-import upload from '../config/multerConfig.js'; // Import multer upload middleware
-import { emitNotification } from '../utils/socket.js'; // Import emitNotification
+import upload from '../config/multerConfig.js';
 
 const authController = {
   async register(req, res) {
@@ -21,7 +20,7 @@ const authController = {
         password
       } = req.body;
 
-      const avatar = req.file ? `/uploads/${req.file.filename}` : undefined; // Get avatar path if file uploaded
+      const avatar = req.file ? `/uploads/${req.file.filename}` : undefined;
 
       const user = await register(
         username,
@@ -30,7 +29,7 @@ const authController = {
         role,
         phone,
         password,
-        avatar); // Pass avatar to register service
+        avatar);
 
       res.status(201).json(
         {
@@ -40,7 +39,7 @@ const authController = {
             email,
             fullName: user.profile.fullName,
             role,
-            avatar: user.profile.avatar // Include avatar in the response
+            avatar: user.profile.avatar
           }
         });
     } catch (error) {
@@ -62,10 +61,15 @@ const authController = {
         email,
         password);
 
-      // Emit a WebSocket notification to the user to join their room
-      emitNotification(user._id.toString(), 'loginSuccess', { message: 'Bạn đã đăng nhập thành công!', userId: user._id });
+      emitNotification(user._id.toString(), 'loginSuccess',
+        { message: 'Bạn đã đăng nhập thành công!', userId: user._id });
 
-      res.json({ message: 'Đăng nhập thành công', token, userId: user._id, role: user.role });
+      res.json({
+        message: 'Đăng nhập thành công',
+        token,
+        userId: user._id,
+        role: user.role
+      });
     } catch (error) {
       res.status(401).json({ message: error.message });
     }
@@ -78,7 +82,10 @@ const authController = {
         return res.status(401).json({ message: 'No token provided' });
       }
       const newToken = await refreshToken(oldToken);
-      res.json({ message: 'Token refreshed successfully', token: newToken });
+      res.json({
+        message: 'Token refreshed successfully',
+        token: newToken
+      });
     } catch (error) {
       res.status(401).json({ message: error.message });
     }

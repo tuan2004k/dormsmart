@@ -12,8 +12,6 @@ const initializeSocketIo = () => {
   io.on('connection', (socket) => {
     info('A user connected via WebSocket', socket.id);
 
-    // When a user logs in, they should join a room named after their userId
-    // This allows us to send specific notifications to individual users.
     socket.on('joinRoom', (userId) => {
       socket.join(userId);
       info(`User ${socket.id} joined room ${userId}`);

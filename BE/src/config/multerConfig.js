@@ -3,14 +3,12 @@ import path from 'path';
 import fs from 'fs';
 import { error, info } from '../utils/logger.js';
 
-// Ensure the uploads directory exists
 const uploadsDir = 'uploads';
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
   info(`Created uploads directory at ${uploadsDir}`);
 }
 
-// Set up storage engine
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     console.log('Multer: Setting destination...');
@@ -23,14 +21,11 @@ const storage = multer.diskStorage({
   },
 });
 
-// Check file type
+
 const checkFileType = (file, cb) => {
   console.log('Multer: Checking file type...');
-  // Allowed ext
   const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx/;
-  // Check ext
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  // Check mime
   const mimetype = filetypes.test(file.mimetype);
 
   if (mimetype && extname) {

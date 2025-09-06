@@ -1,6 +1,8 @@
 import * as contractService from '../service/contractService.js';
+import { info } from '../utils/logger.js'; // Import info logger
 
 export const create = async (req, res, next) => {
+    info('ContractController: create method called');
     try {
         const contract = await contractService.createContract(req.body);
         res
@@ -13,6 +15,7 @@ export const create = async (req, res, next) => {
 };
 
 export const getAll = async (req, res, next) => {
+    info('ContractController: getAll method called');
     try {
         const contracts = await contractService.getAllContracts();
         res
@@ -27,6 +30,7 @@ export const getAll = async (req, res, next) => {
 };
 
 export const getById = async (req, res, next) => {
+    info(`ContractController: getById method called for ID: ${req.params.id}`);
     try {
         const contract = await contractService.getContractById(req.params.id);
         if (!contract) {
@@ -43,6 +47,7 @@ export const getById = async (req, res, next) => {
 };
 
 export const update = async (req, res, next) => {
+    info(`ContractController: update method called for ID: ${req.params.id}`);
     try {
         const contract = await contractService.updateContract(req.params.id, req.body);
         if (!contract) {
@@ -60,6 +65,7 @@ export const update = async (req, res, next) => {
 };
 
 export const sign = async (req, res, next) => {
+  info(`ContractController: sign method called for ID: ${req.params.id}`);
   try {
     const { id } = req.params;
     const userId = req.user.id; // Assuming `protect` middleware populates `req.user`
@@ -74,6 +80,7 @@ export const sign = async (req, res, next) => {
 };
 
 export const remove = async (req, res, next) => {
+    info(`ContractController: remove method called for ID: ${req.params.id}`);
     try {
         const result = await contractService.deleteContract(req.params.id);
         res

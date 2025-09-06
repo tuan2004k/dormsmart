@@ -1,8 +1,10 @@
 import { createRoom, getRoomById, getAllRooms, getAvailableRooms, updateRoomStatus, updateRoom, deleteRoom } from '../service/roomService.js'; // Import updateRoomStatus
 import upload from '../config/multerConfig.js'; // Import multer upload middleware
+import { info } from '../utils/logger.js'; // Import info logger
 
 const roomController = {
   async create(req, res) {
+    info('RoomController: create method called');
     try {
       const { 
         roomNumber, 
@@ -37,6 +39,7 @@ const roomController = {
   },
 
   async getById(req, res) {
+    info(`RoomController: getById method called for ID: ${req.params.id}`);
     try {
       const room = await getRoomById(req.params.id);
       if (!room) return res.status(404).json({ message: 'Room not found' });
@@ -47,6 +50,7 @@ const roomController = {
   },
 
   async getAll(req, res) {
+    info('RoomController: getAll method called');
     try {
       const rooms = await getAllRooms();
       res.json({ message: 'Success', rooms });
@@ -56,6 +60,7 @@ const roomController = {
   },
 
   async getAvailable(req, res) {
+    info('RoomController: getAvailable method called');
     try {
       const rooms = await getAvailableRooms();
       res.json({ message: 'Success', rooms });
@@ -65,6 +70,7 @@ const roomController = {
   },
 
   async update(req, res) {
+    info(`RoomController: update method called for ID: ${req.params.id}`);
     try {
       let updateData = { ...req.body };
       if (req.files && req.files.length > 0) {
@@ -81,6 +87,7 @@ const roomController = {
   },
 
   async updateStatus(req, res) {
+    info(`RoomController: updateStatus method called for ID: ${req.params.id} with status: ${req.body.status}`);
     try {
       const { id } = req.params;
       const { status } = req.body;
@@ -93,6 +100,7 @@ const roomController = {
   },
 
   async delete(req, res) {
+    info(`RoomController: delete method called for ID: ${req.params.id}`);
     try {
       const room = await deleteRoom(req.params.id);
       if (!room) return res.status(404).json({ message: 'Room not found' });

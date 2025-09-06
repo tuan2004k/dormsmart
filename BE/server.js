@@ -7,64 +7,72 @@ import roomRoutes from './src/routes/room.Routes.js'
 import buildingRoutes from './src/routes/building.Routes.js'
 import contractRoutes from './src/routes/contract.Routes.js'
 import paymentRoutes from './src/routes/payment.Routes.js'
-import requestRoutes from './src/routes/request.Routes.js'
+import requestRoutes from './src/routes/request.Routes.js'  
 import uploadRoutes from './src/routes/upload.Routes.js'
-import userRoutes from './src/routes/user.Routes.js' // Import userRoutes
+import userRoutes from './src/routes/user.Routes.js'
 import cors from 'cors';
 import { swaggerUi, swaggerDocs } from './src/docs/swagger.js';
 import dotenv from 'dotenv';
-import limiter from './src/middleware/rateLimitMiddleware.js'; // Import rate limiter
-import cache from './src/middleware/cacheMiddleware.js'; // Import cache middleware
-import { createServer } from 'http'; // Import createServer
-import { Server } from 'socket.io'; // Import Server from socket.io
+import limiter from './src/middleware/rateLimitMiddleware.js';
+import cache from './src/middleware/cacheMiddleware.js'; 
+import { createServer } from 'http'; 
+import { Server } from 'socket.io'; 
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { initializeSocketIo } from './src/utils/socket.js'; // Import initializeSocketIo
-import { info, error } from './src/utils/logger.js'; // Import info and error
-import reportRoutes from './src/routes/report.Routes.js'; // Import report routes
+import { initializeSocketIo } from './src/utils/socket.js'; 
+import { info, error } from './src/utils/logger.js';
+import reportRoutes from './src/routes/report.Routes.js'; 
 
 dotenv.config();
 
 const app = express();
-const httpServer = createServer(app); // Create HTTP server
-const io = new Server(httpServer, { // Initialize socket.io
+const httpServer = createServer(app);
+const io = new Server(httpServer, { 
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Allow frontend to connect
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000', 
     methods: ['GET', 'POST']
   }
 });
 
 app.use(express.json());
+info('Server: express.json() middleware applied');
 app.use(cors());
+info('Server: cors() middleware applied');
 
 connectDB();
-connectRedis(); // Connect to Redis
-initializeSocketIo(); // Initialize Socket.IO
+connectRedis();
+initializeSocketIo(); 
+info('Server: Database, Redis, and Socket.IO initialization complete');
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+info('Server: Swagger UI middleware applied');
+info('Server: Rate limiter middleware (temporarily disabled)');
 
-app.use('/api', limiter); // Apply rate limiter
 
-// Apply cache middleware to specific GET routes
-app.use('/api/rooms', cache, roomRoutes);
-app.use('/api/buildings', cache, buildingRoutes);
-app.use('/api/students', cache, studenRoutes);
-app.use('/api/contracts', cache, contractRoutes);
-app.use('/api/payments', cache, paymentRoutes);
-app.use('/api/requests', cache, requestRoutes);
+app.use('/api/buildings', buildingRoutes); 
+
 
 app.use('/api/auth', authRoutes);
-// app.use('/api', studenRoutes); // Moved above
-// app.use('/api', roomRoutes); // Moved above
-// app.use('/api', buildingRoutes); // Moved above
-// app.use('/api', contractRoutes); // Moved above
-// app.use('/api', paymentRoutes); // Moved above
-// app.use('/api', requestRoutes); // Moved above
+info('Server: Auth routes applied');
+app.use('/api', studenRoutes);
+info('Server: Student routes applied');
+app.use('/api', roomRoutes);
+info('Server: Room routes applied');
+app.use('/api', buildingRoutes);
+info('Server: Building routes applied');
+app.use('/api', contractRoutes);
+info('Server: Contract routes applied');
+app.use('/api', paymentRoutes);
+info('Server: Payment routes applied');
+app.use('/api', requestRoutes);
+info('Server: Request routes applied');
 app.use('/api', uploadRoutes);
-app.use('/api', userRoutes); // Use userRoutes
-app.use('/api', reportRoutes); // Use reportRoutes
+info('Server: Upload routes applied');
+app.use('/api', userRoutes);
+info('Server: User routes applied');
+app.use('/api', reportRoutes);
+info('Server: Report routes applied');
 
-// Serve static files from the 'uploads' directory
 app.use('/uploads', express.static('uploads'));
 
 app.get('/', (req, res) => {
@@ -85,6 +93,15 @@ app.get('/', (req, res) => {
 //     io.emit('receiveMessage', message); // Broadcast message to all connected clients
 //   });
 // });
+
+// General error handling middleware
+app.use((err, req, res, next) => {
+  error('Unhandled Error:', err);
+  res.status(err.statusCode || 500).json({
+    message: err.message || 'An unexpected error occurred',
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 

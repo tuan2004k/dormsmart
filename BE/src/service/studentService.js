@@ -9,28 +9,40 @@ export const createStudent = async (
     emergencyContact,
     documents,
     status) => {
-    const student = new Student({
-        userId,
-        studentId,
-        personalInfo,
-        academicInfo,
-        emergencyContact,
-        documents,
-        status,
-    });
-    return await student.save();
+    try {
+        const student = new Student({
+            userId,
+            studentId,
+            personalInfo,
+            academicInfo,
+            emergencyContact,
+            documents,
+            status,
+        });
+        return await student.save();
+    } catch (error) {
+        throw new Error(`Error creating student: ${error.message}`);
+    }
 };
 
 export const getStudentById = async (id) => {
-    return await Student
-        .findById(id)
-        .populate('userId'); 
+    try {
+        return await Student
+            .findById(id)
+            .populate('userId');
+    } catch (error) {
+        throw new Error(`Error fetching student by ID: ${error.message}`);
+    }
 };
 
 export const getAllStudents = async () => {
-    return await Student
-        .find()
-        .populate('userId'); 
+    try {
+        return await Student
+            .find()
+            .populate('userId');
+    } catch (error) {
+        throw new Error(`Error fetching students: ${error.message}`);
+    }
 };
 
 export const updateStudent = async (id, updateData) => {

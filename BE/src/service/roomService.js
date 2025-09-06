@@ -11,27 +11,39 @@ export const createRoom = async (
   facilities,
   status,
   images) => {
-  const room = new Room({
-    roomNumber,
-    buildingId,
-    floor,
-    roomType,
-    capacity,
-    currentOccupancy,
-    monthlyRent,
-    facilities,
-    status,
-    images,
-  });
-  return await room.save();
+  try {
+    const room = new Room({
+      roomNumber,
+      buildingId,
+      floor,
+      roomType,
+      capacity,
+      currentOccupancy,
+      monthlyRent,
+      facilities,
+      status,
+      images,
+    });
+    return await room.save();
+  } catch (error) {
+    throw new Error(`Error creating room: ${error.message}`);
+  }
 };
 
 export const getRoomById = async (id) => {
-  return await Room.findById(id).populate('buildingId');
+  try {
+    return await Room.findById(id).populate('buildingId');
+  } catch (error) {
+    throw new Error(`Error fetching room by ID: ${error.message}`);
+  }
 };
 
 export const getAllRooms = async () => {
-  return await Room.find();
+  try {
+    return await Room.find();
+  } catch (error) {
+    throw new Error(`Error fetching rooms: ${error.message}`);
+  }
 };
 
 export const getAvailableRooms = async () => {

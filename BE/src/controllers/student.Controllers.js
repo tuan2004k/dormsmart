@@ -1,9 +1,11 @@
 import { createStudent, getStudentById, getAllStudents, updateStudent, deleteStudent } from '../service/studentService.js';
 import * as contractService from '../service/contractService.js'; // Import contractService
 import upload from '../config/multerConfig.js'; // Import multer upload middleware
+import { info } from '../utils/logger.js'; // Import logger utility
 
 const studentController = {
   async create(req, res) {
+    info('StudentController: create method called');
     try {
       const { 
         userId, 
@@ -33,6 +35,7 @@ const studentController = {
   },
 
   async getById(req, res) {
+    info(`StudentController: getById method called for ID: ${req.params.id}`);
     try {
       const student = await getStudentById(req.params.id);
       if (!student) return res.status(404).json({ message: 'Sinh viên không tồn tại' });
@@ -43,6 +46,7 @@ const studentController = {
   },
 
   async getAll(req, res) {
+    info('StudentController: getAll method called');
     try {
       const students = await getAllStudents();
       res.json({ message: 'Thành công', students });
@@ -52,6 +56,7 @@ const studentController = {
   },
 
   async getContracts(req, res) {
+    info(`StudentController: getContracts method called for student ID: ${req.params.id}`);
     try {
       const contracts = await contractService.getContractsByStudentId(req.params.id);
       res.json({ message: 'Contracts retrieved successfully', contracts });
@@ -61,6 +66,7 @@ const studentController = {
   },
 
   async update(req, res) {
+    info(`StudentController: update method called for ID: ${req.params.id}`);
     try {
       let updateData = { ...req.body };
       if (req.files && req.files.length > 0) {
@@ -77,6 +83,7 @@ const studentController = {
   },
 
   async remove(req, res) {
+    info(`StudentController: remove method called for ID: ${req.params.id}`);
     try {
       const result = await deleteStudent(req.params.id);
       res.json({ message: 'Sinh viên đã được xóa', result });
