@@ -3,20 +3,20 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./BE
+      context: .
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
     environment:
-      MONGO_URI: mongodb://mongodb:27017/dormstart
-      REDIS_URL: redis://redis:6379
-      PORT: 5000
-      NODE_ENV: development
+      MONGO_URI: ${MONGO_URI}
+      REDIS_URL: ${REDIS_URL}
+      PORT: ${PORT}
+      NODE_ENV: ${NODE_ENV}
     depends_on:
       - mongodb
       - redis
     volumes:
-      - ./BE:/app
+      - .:/app
       - /app/node_modules
 
   mongodb:

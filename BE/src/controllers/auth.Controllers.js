@@ -2,6 +2,8 @@ import { register, login, refreshToken } from '../service/authservice.js';
 import { body, validationResult } from 'express-validator';
 import { validateRegister, validateLogin } from '../utils/validate.js';
 import upload from '../config/multerConfig.js';
+import { emitNotification } from '../utils/socket.js'; // Import emitNotification
+import { info, error } from '../utils/logger.js'; // Import info and error logger
 
 const authController = {
   async register(req, res) {
@@ -48,21 +50,27 @@ const authController = {
   },
 
   async login(req, res) {
+    info('AuthController: login method called');
     try {
+      info('AuthController: Validating request body...');
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        info('AuthController: Validation failed, sending 400');
         return res.status(400).json({ errors: errors.array() });
       }
       const {
         email,
         password
       } = req.body;
+      info('AuthController: Calling authService.login...');
       const { token, user } = await login(
         email,
         password);
 
+      info(`AuthController: Login successful for user ${user._id}, emitting notification...`);
       emitNotification(user._id.toString(), 'loginSuccess',
         { message: 'Bạn đã đăng nhập thành công!', userId: user._id });
+      info('AuthController: Notification emitted, sending response...');
 
       res.json({
         message: 'Đăng nhập thành công',
@@ -70,8 +78,10 @@ const authController = {
         userId: user._id,
         role: user.role
       });
-    } catch (error) {
-      res.status(401).json({ message: error.message });
+      info('AuthController: Login response sent.');
+    } catch (err) {
+      error(`AuthController: Error during login: ${err.message}`);
+      res.status(401).json({ message: err.message });
     }
   },
 

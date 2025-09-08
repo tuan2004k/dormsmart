@@ -22,6 +22,7 @@ const swaggerOptions = {
                     scheme: 'bearer',
                     bearerFormat: 'JWT',
                 },
+
             },
             schemas: {
                 User: {
@@ -190,16 +191,16 @@ const swaggerOptions = {
         },
     },
     apis: [
-      './src/routes/auth.Routes.js',
-      './src/routes/student.Routes.js',
-      './src/routes/room.Routes.js',
-      './src/routes/building.Routes.js',
-      './src/routes/contract.Routes.js',
-      './src/routes/payment.Routes.js',
-      './src/routes/request.Routes.js',
-      './src/routes/upload.Routes.js',
-      './src/routes/user.Routes.js',
-      './src/routes/report.Routes.js', 
+        './src/routes/auth.Routes.js',
+        './src/routes/student.Routes.js',
+        './src/routes/room.Routes.js',
+        './src/routes/building.Routes.js',
+        './src/routes/contract.Routes.js',
+        './src/routes/payment.Routes.js',
+        './src/routes/request.Routes.js',
+        './src/routes/upload.Routes.js',
+        './src/routes/user.Routes.js',
+        './src/routes/report.Routes.js',
     ]
 };
 
