@@ -76,12 +76,6 @@ const router = express.Router();
  *                   faculty:
  *                     type: string
  *                     example: "Information Technology"
- *                   major:
- *                     type: string
- *                     example: "Software Engineering"
- *                   year:
- *                     type: number
- *                     example: 2023
  *               emergencyContact:
  *                 type: object
  *                 properties:
@@ -313,10 +307,6 @@ router.get('/students/:id/contracts', [protect, authorize(['ADMIN', 'STAFF', 'ST
  *                     type: string
  *                   faculty:
  *                     type: string
- *                   major:
- *                     type: string
- *                   year:
- *                     type: number
  *               emergencyContact:
  *                 type: object
  *                 properties:

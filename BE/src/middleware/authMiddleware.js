@@ -4,6 +4,7 @@ import { info, error } from '../utils/logger.js';
 
 export const protect = async (req, res, next) => {
   info('AuthMiddleware: protect method called');
+  console.log('Protect middleware: Checking for token...');
   const token = req.headers['authorization']?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ message: 'Không có token được cung cấp' });

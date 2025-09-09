@@ -7,30 +7,37 @@ const studentController = {
   async create(req, res) {
     info('StudentController: create method called');
     try {
-      const { 
-        userId, 
-        studentId, 
-        personalInfo, 
-        academicInfo, 
-        emergencyContact, 
-        status 
-      } = req.body; 
+      const {
+        studentId,
+        personalInfo: rawPersonalInfo = {},
+        academicInfo: rawAcademicInfo = {},
+        emergencyContact: rawEmergencyContact = {},
+        status = 'active',
+      } = req.body;
 
-      const documents = req.files ? req.files.map(file => `/uploads/${file.filename}`) : []; // Handle multiple document uploads
+      const userId = req.user.id; // Get userId from authenticated user
+
+      // Parse nested JSON strings if they are sent as strings (e.g., from multipart/form-data)
+      const personalInfo = typeof rawPersonalInfo === 'string' ? JSON.parse(rawPersonalInfo) : rawPersonalInfo;
+      const academicInfo = typeof rawAcademicInfo === 'string' ? JSON.parse(rawAcademicInfo) : rawAcademicInfo;
+      const emergencyContact = typeof rawEmergencyContact === 'string' ? JSON.parse(rawEmergencyContact) : rawEmergencyContact;
+
+      const documents = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
       const student = await createStudent(
-        userId, 
-        studentId, 
-        personalInfo, 
-        academicInfo, 
-        emergencyContact, 
-        documents, 
+        userId,
+        studentId,
+        personalInfo,
+        academicInfo,
+        emergencyContact,
+        documents,
         status
       );
 
       res.status(201).json({ message: 'Sinh viên được tạo', student });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      console.error('Error creating student:', error); // Log the actual error
+      res.status(400).json({ message: error.message || 'Yêu cầu không hợp lệ' });
     }
   },
 
@@ -69,6 +76,7 @@ const studentController = {
     info(`StudentController: update method called for ID: ${req.params.id}`);
     try {
       let updateData = { ...req.body };
+
       if (req.files && req.files.length > 0) {
         const newDocuments = req.files.map(file => `/uploads/${file.filename}`);
         updateData.documents = updateData.documents ? [...updateData.documents, ...newDocuments] : newDocuments;

@@ -24,8 +24,6 @@ const studentSchema = new mongoose.Schema({
     academicInfo: {
         university: { type: String },
         faculty: { type: String },
-        major: { type: String },
-        year: { type: Number },
     },
     emergencyContact: {
         name: { type: String },
