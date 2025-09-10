@@ -4,7 +4,7 @@ import { FaHome, FaUserGraduate, FaBuilding, FaFileContract, FaMoneyBill, FaChar
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const menuItems = [
-    { name: "Dashboard", path: "/dashboard", icon: <FaHome /> },
+    { name: "Dashboard", path: "/", icon: <FaHome /> },
     { name: "Students", path: "/students", icon: <FaUserGraduate /> },
     { name: "Rooms", path: "/rooms", icon: <FaBuilding /> },
     { name: "Contracts", path: "/contracts", icon: <FaFileContract /> },

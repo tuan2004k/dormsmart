@@ -15,7 +15,7 @@ const rootReducer = combineReducers({
   studentCreate: studentCreateReducer,
   studentUpdate: studentUpdateReducer,
   studentDelete: studentDeleteReducer,
-  // Add other reducers here
+
 });
 
 export default rootReducer;

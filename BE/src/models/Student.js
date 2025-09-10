@@ -4,7 +4,7 @@ const studentSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', required: true,
-        index: true, // Added index to userId
+        index: true, 
     },
     studentId: {
         type: String,
@@ -35,7 +35,7 @@ const studentSchema = new mongoose.Schema({
         type: String,
         enum: ['active', 'graduated', 'dropped'],
         default: 'active',
-        index: true, // Added index to status
+        index: true, 
     },
     createdAt: {
         type: Date,
@@ -49,6 +49,11 @@ const studentSchema = new mongoose.Schema({
 
 studentSchema.pre('save', function (next) {
     this.updatedAt = new Date();
+    next();
+});
+
+studentSchema.pre(['findOneAndUpdate', 'findByIdAndUpdate'], function (next) {
+    this.set({ updatedAt: new Date() });
     next();
 });
 

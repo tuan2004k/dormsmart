@@ -24,7 +24,7 @@ export const listStudents = (params) => async (dispatch) => {
   try {
     dispatch({ type: STUDENT_LIST_REQUEST });
     const { data } = await studentService.getAllStudents(params);
-    dispatch({ type: STUDENT_LIST_SUCCESS, payload: data.students }); 
+    dispatch({ type: STUDENT_LIST_SUCCESS, payload: data.students });
   } catch (error) {
     dispatch({
       type: STUDENT_LIST_FAIL,
@@ -39,7 +39,7 @@ export const getStudentDetails = (id) => async (dispatch) => {
   try {
     dispatch({ type: STUDENT_DETAILS_REQUEST });
     const { data } = await studentService.getStudentById(id);
-    dispatch({ type: STUDENT_DETAILS_SUCCESS, payload: data });
+    dispatch({ type: STUDENT_DETAILS_SUCCESS, payload: data.student });
   } catch (error) {
     dispatch({
       type: STUDENT_DETAILS_FAIL,
